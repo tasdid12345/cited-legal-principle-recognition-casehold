@@ -1,0 +1,29 @@
+{
+  "question": "Can a tuned TF-IDF (word+char n-gram) model with context-candidate overlap features and class-imbalance handling beat a Naive Bayes n-gram baseline at recognizing genuine cited legal principles (holdings)?",
+  "method": "CaseHOLD (LexGLUE) proxy: each context has 1 true holding and 4 distractors, each candidate a binary instance. Train contexts subsampled from the train split, held-out contexts subsampled from the official test split. Hyperparameters and decision threshold chosen by context-grouped 3-fold CV on train only; test used once.",
+  "dataset": {
+    "name": "LexGLUE CaseHOLD (proxy for BAILII corpus)",
+    "source_url": "https://huggingface.co/datasets/coastalcph/lex_glue",
+    "n_rows": 37500,
+    "n_train": 30000,
+    "n_test": 7500,
+    "same_as_paper": false
+  },
+  "metric_name": "F1 of the true-principle (positive) class",
+  "higher_is_better": true,
+  "baseline": "Multinomial Naive Bayes on word 1-2gram counts of the candidate (alpha tuned by CV).",
+  "improved": "Logistic regression on word+char TF-IDF of the candidate plus context-candidate overlap features (raw and centred within context), CV-tuned C and class weighting.",
+  "metrics": {
+    "baseline_score": 0.36597840500094714,
+    "improved_score": 0.5890751086281812,
+    "improvement": 0.2230967036272341,
+    "baseline_f1": 0.36597840500094714,
+    "improved_f1": 0.5890751086281812,
+    "baseline_top1_acc": 0.284,
+    "improved_top1_acc": 0.5973333333333334,
+    "baseline_roc_auc": 0.6181442777777778,
+    "improved_roc_auc": 0.8549633333333333,
+    "random_top1_acc": 0.2
+  },
+  "notes": "Proxy dataset (US case law, not UK BAILII) so results are not comparable to the paper. Both models use an F1-optimal threshold picked from out-of-fold train scores. TF-IDF vocabularies are fit unsupervised on train candidates before CV. Best params: baseline {'multinomialnb__alpha': 0.5}, improved {'C': 0.3, 'class_weight': None}. Single run, single seed, no confidence intervals; the test set is subsampled."
+}
